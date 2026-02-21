@@ -1,0 +1,9 @@
+nohup: ignoring input
+
+> hello-world@0.0.0 preview
+> vite preview --host 0.0.0.0 --port 7141
+
+  ➜  Local:   http://localhost:7141/
+  ➜  Network: http://164.90.210.208:7141/
+  ➜  Network: http://10.19.0.7:7141/
+  ➜  Network: http://10.114.0.4:7141/
