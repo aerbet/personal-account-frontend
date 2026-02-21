@@ -8,7 +8,14 @@ export default defineConfig({
     vue(),
   ],
   server: {
-    port: 7141
+    port: 7141,
+    proxy: {
+    "/api": {
+      target: "http://localhost:8141",
+      changeOrigin: true,
+      secure: false,
+    },
+  },
   },
   resolve: {
     alias: {
