@@ -1,12 +1,19 @@
 import { createWebHistory, createRouter } from "vue-router";
-import Login from "./components/Login.vue";
+import Register from "./components/Register.vue";
 import { initCsrf } from "./services/csrf";
+import Main from "./components/Main.vue";
 
 const routes = [
   {
-    path: "/login",
-    component: Login,
-  }
+    path: "/",
+    name: "Register",
+    component: Register,
+  },
+  {
+    path: "/main",
+    name: "Main",
+    component: Main,
+  },
 ];
 
 const router = createRouter({
@@ -15,7 +22,7 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  if (to.path === "/login" || to.path === "/customers") {
+  if (to.path === "/" || to.path === "/profile") {
     await initCsrf();
   }
   next();
