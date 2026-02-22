@@ -232,7 +232,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .lk {
   min-height: 100vh;
   background: #f5f7fb;
@@ -504,8 +504,8 @@ export default {
   width: 100%;
   height: 60px;
   border-radius: 12px;
-  border: 1px solid #e6eaf2;
-  background: #ebe6e7;
+  border: 1px solid #c7c7c745;
+  background: #c7c7c745;
   color: #101828;
   font-weight: 600;
   font-size: 16px;
