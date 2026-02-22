@@ -2,9 +2,8 @@ import {createApp} from "vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
+import './assets/base.css'
 
-import "bootstrap";
-import "bootstrap/dist/css/bootstrap.min.css";
 import {FontAwesomeIcon} from "./plugins/font-awesome";
 
 import axios from "axios";
