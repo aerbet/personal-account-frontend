@@ -39,7 +39,7 @@
           </button>
 
           <button class="linkRow" type="button" @click="toggleTestNumbers">
-            <font-awesome-icon :icon="faInfoCircle" class="infoIcon" />
+            <font-awesome-icon icon="info-circle" class="infoIcon" />
             <span>Показать тестовые номера</span>
           </button>
 
@@ -57,6 +57,37 @@
             <a class="support" href="#" @click.prevent="openSupport">Обратитесь в поддержку</a>
           </p>
         </Form>
+      </template>
+
+      <template v-else-if="step === 'method'">
+        <h1 class="title">Выберите способ входа</h1>
+        <p class="subtitle">Как вы хотите войти в систему?</p>
+
+        <div class="methodList">
+          <button type="button" class="methodCard" @click="chooseMethod('otp_email')">
+            <div class="methodIcon methodIconBlue" aria-hidden="true">
+              <font-awesome-icon icon="envelope" />
+            </div>
+            <div class="methodText">
+              <div class="methodTitle">OTP код на Email</div>
+              <div class="methodHint">Получите код на почту</div>
+            </div>
+          </button>
+
+          <button type="button" class="methodCard" @click="chooseMethod('password')">
+            <div class="methodIcon methodIconGreen" aria-hidden="true">
+              <font-awesome-icon icon="lock" />
+            </div>
+            <div class="methodText">
+              <div class="methodTitle">Вход по паролю</div>
+              <div class="methodHint">Используйте установленный пароль</div>
+            </div>
+          </button>
+        </div>
+
+        <button class="backLink" type="button" @click="goBackToPhone">
+          Назад
+        </button>
       </template>
 
       <template v-else-if="step === 'email'">
@@ -156,20 +187,15 @@
 <script>
 import { Form, Field, ErrorMessage } from "vee-validate";
 import * as yup from "yup";
-import { useRouter } from "vue-router";
-
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faPhone, faInfoCircle, faEnvelope } from "@fortawesome/free-solid-svg-icons";
 
 export default {
   name: "PhoneLogin",
-  components: { Form, Field, ErrorMessage, FontAwesomeIcon },
+  components: { Form, Field, ErrorMessage},
   data() {
     return {
-      faPhone,
-      faInfoCircle,
-      faEnvelope,
       API_BASE: "/api",
+      loginMethod: null,
+      userExists: false,
 
       step: "phone",
       isSubmitting: false,
@@ -206,8 +232,11 @@ export default {
 
   computed: {
     currentIcon() {
-      if (this.step === "phone") return this.faPhone;
-      return this.faEnvelope;
+      if (this.step === "phone") return "phone";
+      if (this.step === "method") return "envelope";
+      if (this.step === "email") return "envelope";
+      if (this.step === "code") return "envelope";
+      return "envelope";
     },
   },
 
@@ -256,13 +285,13 @@ export default {
         const exists = await this.checkUserExists(phoneNumber);
 
         if (exists === true) {
-          const payload = {
-            phoneNumber: `+996${this.phoneDigits}`,
-          };
-          await this.postJson("/auth/otp/generate", payload);
+          this.phoneDigits = values.phone;
+          const phoneNumber = `+996${this.phoneDigits}`;
 
-          this.step = "code";
-          this.startResendTimer(57);
+          const exists = await this.checkUserExists(phoneNumber);
+          this.userExists = exists === true;
+
+          this.step = "method";
         } else {
           this.step = "email";
         }
@@ -270,6 +299,35 @@ export default {
           alert(e?.message || "Ошибка при проверке номера");
       } finally {
           this.isSubmitting = false;
+      }
+    },
+
+    async chooseMethod(method) {
+      this.loginMethod = method;
+
+      if (method === "otp_email") {
+        if (this.userExists) {
+          this.isSubmitting = true;
+          try {
+            await this.postJson("/auth/otp/generate", {
+              phoneNumber: `+996${this.phoneDigits}`,
+            });
+
+            this.step = "code"; 
+            this.startResendTimer(57); // otp/generate лучше вызывать в resendCode чтобы по истечению таймера код автоматически отправлялся или по нажатию кнопки
+          } catch (e) {
+            alert(e?.message || "Не удалось отправить код");
+          } finally {
+            this.isSubmitting = false;
+          }
+        } else {
+          this.step = "email";
+        }
+        return;
+      }
+
+      if (method === "password") {
+        alert("Логин по паролю пока не реализован");
       }
     },
 
@@ -511,6 +569,78 @@ export default {
 }
 .infoIcon {
   font-size: 16px;
+}
+
+.methodList {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.methodCard {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding: 18px 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #fff;
+
+  cursor: pointer;
+  text-align: left;
+
+  transition: box-shadow 0.15s ease, border-color 0.15s ease, transform 0.05s ease;
+}
+
+.methodCard:hover {
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.08);
+  border: 3px solid #155efcd3;
+}
+
+.methodCard:active {
+  transform: translateY(1px);
+}
+
+.methodCard.active {
+  border-color: #93c5fd;
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.12);
+}
+
+.methodIcon {
+  width: 55px;
+  height: 55px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+}
+
+.methodIconBlue {
+  background: #e0ecff;
+  color: #2563eb;
+}
+
+.methodIconGreen {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.methodText {
+  display: grid;
+  gap: 4px;
+}
+
+.methodTitle {
+  font-weight: 600;
+  font-size: 18px;
+  color: #111827;
+}
+
+.methodHint {
+  font-size: 16px;
+  color: #6b7280;
 }
 
 .tests {
