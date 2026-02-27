@@ -1,13 +1,12 @@
 <template>
   <div class="page">
     <div class="card">
-      <div class="iconWrap" aria-hidden="true">
-        <div class="iconCircle">
-          <font-awesome-icon :icon="currentIcon" class="iconPhone" />
-        </div>
-      </div>
-
       <template v-if="step === 'phone'">
+        <div class="iconWrap" aria-hidden="true">
+          <div class="iconCircle">
+            <font-awesome-icon :icon="currentIcon" class="iconPhone" />
+          </div>
+        </div>
         <h1 class="title">Вход в личный кабинет</h1>
         <p class="subtitle">Введите номер телефона для входа</p>
 
@@ -25,7 +24,7 @@
                 autocomplete="tel"
                 inputmode="numeric"
                 maxlength="9"
-                placeholder="000 000 000"
+                placeholder="___ ___ ___"
                 :disabled="isSubmitting"
                 @input="onPhoneInput"
               />
@@ -233,9 +232,9 @@ export default {
   computed: {
     currentIcon() {
       if (this.step === "phone") return "phone";
-      if (this.step === "method") return "envelope";
+      if (this.step === "method") return "";
       if (this.step === "email") return "envelope";
-      if (this.step === "code") return "envelope";
+      if (this.step === "code") return "info-circle";
       return "envelope";
     },
   },
@@ -433,7 +432,7 @@ export default {
 
 .card {
   width: 100%;
-  max-width: 490px;
+  max-width: 450px;
   background: #ffffff;
   border-radius: 16px;
   padding: 36px 40px 26px;
@@ -457,20 +456,19 @@ export default {
 .iconPhone {
   font-size: 30px;
   color: #155dfc;
-  transform: scaleX(-1);
 }
 
 .title {
   margin: 0;
   text-align: center;
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 600;
   color: #0f172a;
 }
 .subtitle {
   margin: 8px 0 22px;
   text-align: center;
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1.35;
   color: #64748b;
 }
@@ -481,7 +479,7 @@ export default {
 
 .label {
   display: block;
-  font-size: 16px;
+  font-size: 14px;
   color: #334155;
   margin-bottom: 8px;
   font-weight: 600;
@@ -505,7 +503,7 @@ export default {
 }
 
 .prefix {
-  font-size: 18px;
+  font-size: 16px;
   color: #7c7c7c;
   margin-right: 5px;
   white-space: nowrap;
@@ -515,7 +513,7 @@ export default {
   border: none;
   outline: none;
   width: 100%;
-  font-size: 18px;
+  font-size: 16px;
   color: #585858;
 }
 
